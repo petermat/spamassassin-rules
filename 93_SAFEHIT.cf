@@ -1,0 +1,33 @@
+# SpamAssassin rule for SAFETEST_1
+
+header          SAFETEST_HEADER1       X-Custom-Header =~ /gophish/i
+score           SAFETEST_HEADER1       -5.0
+describe        SAFETEST_HEADER1       Safetest: Gophish Header Match
+
+#rawbody         SAFETEST_HEADER2       /^This email is generated$/
+#score           SAFETEST_HEADER2       -5.0
+#describe        SAFETEST_HEADER2       Safetest: Version2
+
+
+header          SAFETEST_SUBJ1       Subject =~ /Your support ticket \#698267 is awaiting your response/
+score           SAFETEST_SUBJ1       -3.0
+describe        SAFETEST_SUBJ1       Safetest: Version3
+
+
+#header          SAFETEST_SUBJ1       Subject =~ /Action required: Browser security update/
+#score           SAFETEST_SUBJ1       -3.0
+#describe        SAFETEST_SUBJ1       Safetest: Version Browser Update
+
+
+header          SAFETEST_SUBJ1       Subject =~ /WARNING! Copyright Infringement Notice/
+score           SAFETEST_SUBJ1       -3.0
+describe        SAFETEST_SUBJ1       Safetest: Version Copyright Infringement
+
+
+#header          SAFETEST_FROM2        From:addr =~ /it-support\@my-notifications\.nl$/i
+#score           SAFETEST_FROM2        -3.0
+#describe        SAFETEST_FROM2        Safetest: Sender domain match GoPhish
+
+#header DJD_DOM_EU From =~ /\b@.{1,25}\.eu\b/i
+#describe DJD_COM_EU Give high score to tld eu
+#score DJD_DOM_EU 5.0

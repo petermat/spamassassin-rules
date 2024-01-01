@@ -1,0 +1,22 @@
+# SpamAssassin rules file: Uplifted and renamed rules
+#
+# Add ad least 'body /(?!x)x/i'
+#
+##########################################################################
+
+
+
+# disabled because ... from file ...
+body        TEST1   /(?!x)x/i
+describe    TEST1   Blacklisted rule TEST1
+
+
+# uplift
+score LOTS_OF_MONEY 4.5
+score RCVD_IN_MSPIKE_L5 3
+score RCVD_IN_MSPIKE_L4 2
+score RCVD_IN_MSPIKE_L3 1
+score RCVD_IN_MSPIKE_L2 1
+score RCVD_IN_MSPIKE_BL 1
+score FREEMAIL_FROM 2.5
+

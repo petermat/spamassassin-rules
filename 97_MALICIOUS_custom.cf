@@ -1,0 +1,79 @@
+
+# https://wiki.apache.org/spamassassin/FromNotReplyTo
+
+# WORKING
+loadplugin FromNotReplyTo plugins/FromNotReplyTo.pm
+header          MALICIOUS_FROM_NOT_REPLYTO eval:check_for_from_not_reply_to()
+score           MALICIOUS_FROM_NOT_REPLYTO 0.5
+describe        MALICIOUS_FROM_NOT_REPLYTO From does not match Reply-To
+
+
+# IN TESTING
+# https://www.lexo.ch/blog/2018/07/solved-spf-setting-does-not-apply-to-return-path-causing-more-spam-and-phishing-e-mails-spamassassin-postfix/
+header          MALICIOUS_RETURNPATH_FROM_MISMATCH   ALL =~ /.*?^Return-Path:\s*\<[a-z0-9?=._%+-]+@([a-z0-9?=._%+-]+)\>.*^From:\s*[a-z0-9?=._%+-]+\s*\<[a-z0-9?=._%+-]+@(?!\1\>).*/ism
+describe        MALICIOUS_RETURNPATH_FROM_MISMATCH   Return-Path / From Headers Missmatch
+score           MALICIOUS_RETURNPATH_FROM_MISMATCH   7.0
+
+
+header          MALICIOUS_FROM_RETURNPATH_MISMATCH   ALL =~ /.*?^From:\s*[a-z0-9?=._%+-]+\s*\<[a-z0-9?=._%+-]+@([a-z0-9?=._%+-]+)\>.*^Return-Path:\s*\<[a-z0-9?=._%+-]+@(?!\1\>).*/ism
+describe        MALICIOUS_FROM_RETURNPATH_MISMATCH   Return-Path / From Headers Missmatch
+score           MALICIOUS_FROM_RETURNPATH_MISMATCH   7.0
+
+# WORKING
+# Higlight SPF failed - deactivated as not needed now
+# describe      MALICIOUS_HIGHLIGHT_FAIL_SPF_DKIM Malicious: SPF Failed
+# meta          MALICIOUS_HIGHLIGHT_FAIL_SPF_DKIM (DKIM_ADSP_NXDOMAIN||NO_DNS_FOR_FROM||SPF_FAIL||DKIM_INVALID)
+# score         MALICIOUS_HIGHLIGHT_FAIL_SPF_DKIM 4.0
+
+# huge list
+# https://www.pccc.com/downloads/SpamAssassin/contrib/KAM.cf
+
+#OWA/EMAIL PHISH
+rawbody		KAM_OWAPHISH1	/http:\/\/.{5,30}\/owa\/service_directory\/settings.php/i
+score		KAM_OWAPHISH1	6.0
+describe	KAM_OWAPHISH1	Malicious: Rash of OWA setting change emails for phishing
+
+#EXE LINK
+uri             MALICIOUS_KAM_EXEURI      /(.exe|.msi)$/i
+score           MALICIOUS_KAM_EXEURI      1.5
+describe        MALICIOUS_KAM_EXEURI      Malicious: EXE embedded link
+
+#COMPRESSED FILE LINK
+uri             MALICIOUS_KAM_PKURI      /(.zip|.rar|.7z)$/i
+score           MALICIOUS_KAM_PKURI      1.5
+describe        MALICIOUS_KAM_PKURI      Malicious: Compressed file embedded link
+
+#app.box.com storage abused
+uri             MALICIOUS_BOXCOM         /^https:\/\/(.{0,20}\.)?(app\.box\.com)/i
+describe        MALICIOUS_BOXCOM         Storage provider app.box.comm frequently abused to serve payloads
+score           MALICIOUS_BOXCOM         2.0
+
+
+#appspot.com storage abused
+uri             MALICIOUS_APPSPOT         /^https:\/\/(.{0,20}\.)?(appspot\.com)/i
+describe        MALICIOUS_APPSPOT         Storage provider appspot.comm frequently abused to serve payloads
+score           MALICIOUS_APPSPOT         2.0
+
+
+# google redirect detection
+#uri           MALICIOUS_GOOGLE_REDIR          /^https?:\/\/(www\.)?google\..*q=((%48)|(%68)|h)((%54)|(%74)|t){2}((%50)|(%70)|p)((%53)|(%73)|s)?
+rawbody	       MALICIOUS_GOOGLE_REDIR          /https?:\/\/(www[\.|%2e])?google[\.|%2e].*q=((%48)|(%68)|h)((%54)|(%74)|t){2}((%50)|(%70)|p)((%53)|(%73)|s)?((%A3)|:)((%2F)|\/){2}/i
+describe       MALICIOUS_GOOGLE_REDIR          Google redirect may lead to phishing site
+score          MALICIOUS_GOOGLE_REDIR          3
+
+
+# Generic redirect detection
+uri            MALICIOUS_GENERIC_REDIR          /=((%48)|(%68)|h)((%54)|(%74)|t)((%54)|(%74)|t)((%50)|(%70)|p)((%53)|(%73)|s)?((%A3)|:)((%2F)|\/){2}/i
+describe       MALICIOUS_GENERIC_REDIR          Another URL link in as parameter in hyperlink. Maybe redirect. 
+score          MALICIOUS_GENERIC_REDIR          2
+
+
+# Suspicious .stream, .trade, .pw, .top, .press, .bid & .date TLD Domain Abuse
+header 		__KAM_SOMETLD_ARE_BAD_TLD_FROM          From:addr =~ /\.(pw|stream|trade|bid|press|top|date)$/i
+uri		__KAM_SOMETLD_ARE_BAD_TLD_URI		/\.(pw|stream|trade|bid|press|top|date)($|\/)/i
+
+meta		MALICIOUS_SOMETLD_ARE_BAD_TLD		(__KAM_SOMETLD_ARE_BAD_TLD_FROM + __KAM_SOMETLD_ARE_BAD_TLD_URI) >= 1
+describe 	MALICIOUS_SOMETLD_ARE_BAD_TLD         .stream, .trade, .pw, .top, .press, .bid & .date TLD Domain Abuse
+score 		MALICIOUS_SOMETLD_ARE_BAD_TLD         2.0
+
+

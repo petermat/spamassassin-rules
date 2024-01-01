@@ -1,0 +1,347 @@
+###
+##    ____          _ Apache SpamAssassin____        _
+##   / ___|   _ ___| |_ ___  _ __ ___   |  _ \ _   _| | ___  ___
+##  | |  | | | / __| __/ _ \| '_ ` _ \  | |_) | | | | |/ _ \/ __|
+##  | |__| |_| \__ \ || (_) | | | | | | |  _ <| |_| | |  __/\__ \
+##   \____\__,_|___/\__\___/|_| |_| |_| |_| \_\\__,_|_|\___||___/
+##             https://github.com/kawaiipantsu/spamassassin-rules
+##
+## Custom rule description:
+##
+## Trying to catch unwanted spam/bulk about money loaning.
+## We split it up in two sections, one most likely and one just likely.
+##
+#########################################################################
+
+
+# https://github.com/kawaiipantsu/spamassassin-rules/blob/master/rules/local-apple.cf
+
+header __PP_LOCAL_APPLE_01 From =~ /apple/i
+header __PP_LOCAL_APPLE_02 From !~ /(\@email\.apple|\@apple)\.(dk|com|co\.uk)>$/i
+header __PP_LOCAL_APPLE_03 Message-ID !~ /(\@apple\.com|\@email\.apple\.com)>$/
+header __PP_LOCAL_APPLE_04 DKIM-Signature !~ /[a-z]+/
+body   __PP_LOCAL_APPLE_05 /\b(apple|icloud|ios|appleid|itunes)\b/i
+header __PP_LOCAL_APPLE_06 Subject =~ /(apple|icloud|ios|appstore|itunes|invoice)/i
+
+meta MALICIOUS_PP_LOCAL_APPLE_PHISHING_01 (( __PP_LOCAL_APPLE_01 + __PP_LOCAL_APPLE_02 + __PP_LOCAL_APPLE_03 + __PP_LOCAL_APPLE_04 + __PP_LOCAL_APPLE_05 + __PP_LOCAL_APPLE_06 )) > 4
+score MALICIOUS_PP_LOCAL_APPLE_PHISHING_01 10
+describe MALICIOUS_PP_LOCAL_APPLE_PHISHING_01 Phishing attempt on Apple emails
+
+header __PP_LOCAL_APPLE1_01 From =~ /apple itunes/i
+header __PP_LOCAL_APPLE1_02 From !~ /(\@email\.apple|\@apple)\.(dk|com|co\.uk)>$/i
+header __PP_LOCAL_APPLE1_03 Message-ID !~ /(\@apple\.com|\@email\.apple\.com)>$/
+
+meta MALICIOUS_PP_LOCAL_APPLE_PHISHING_02 (( __PP_LOCAL_APPLE1_01 + __PP_LOCAL_APPLE1_02 + __PP_LOCAL_APPLE1_03 )) > 2
+score MALICIOUS_PP_LOCAL_APPLE_PHISHING_02 10
+describe MALICIOUS_PP_LOCAL_APPLE_PHISHING_02 Phishing attempt on Apple iTunes emails
+
+
+##
+## Custom rule description:
+##
+## Trying to catch unwanted spam/bulk about money loaning.
+## We split it up in two sections, one most likely and one just likely.
+##
+#########################################################################
+# https://github.com/kawaiipantsu/spamassassin-rules/blob/master/rules/local-money.cf
+
+header   __PP_LOCAL_MONEY_1 From =~ /(loans|money)\w/i
+header   __PP_LOCAL_MONEY_2 List-Unsubscribe =~ /[a-z]+/i
+body     __PP_LOCAL_MONEY_3 /to view it online/i
+body     __PP_LOCAL_MONEY_4 /to stop receiving/i
+body     __PP_LOCAL_MONEY_5 /click here to unsubscribe/i
+
+
+meta     MALICIOUS_PP_LOCAL_MONEY_1 (( __PP_LOCAL_MONEY_1 + __PP_LOCAL_MONEY_2 + __PP_LOCAL_MONEY_3 + __PP_LOCAL_MONEY_4 + __PP_LOCAL_MONEY_5 )) > 4
+
+describe MALICIOUS_PP_LOCAL_MONEY_1 Unwanted bulk mail 
+score    MALICIOUS_PP_LOCAL_MONEY_1 5
+
+meta     MALICIOUS_PP_LOCAL_SUBSCRIPTION_HEADERS (( __PP_LOCAL_MONEY_3 + __PP_LOCAL_MONEY_4 + __PP_LOCAL_MONEY_5 )) > 2
+describe MALICIOUS_PP_LOCAL_SUBSCRIPTION_HEADERS Probably unwanted bulk email
+score    MALICIOUS_PP_LOCAL_SUBSCRIPTION_HEADERS 2
+
+header MALICIOUS_PP_LOCAL_PHP_EVAL X-PHP-Originating-Script =~ /eval\(\)\'d code/i
+describe MALICIOUS_PP_LOCAL_PHP_EVAL Eval()'ed PHP code as source
+score MALICIOUS_PP_LOCAL_PHP_EVAL 100
+
+
+
+##
+## Custom rule description:
+##
+## Basic profanity rules ...
+##
+#########################################################################
+
+
+
+header   PP_LOCAL_PROFANITY_SUBJECT_1 Subject =~ /\bCunt(s|ing)?\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_1 Subject: C word
+score    PP_LOCAL_PROFANITY_SUBJECT_1 1
+
+header   PP_LOCAL_PROFANITY_SUBJECT_2 Subject =~ /\bF(\#|\*|u)ck/i
+describe PP_LOCAL_PROFANITY_SUBJECT_2 Subject: contains obfuscated F word
+score    PP_LOCAL_PROFANITY_SUBJECT_2 2
+
+header   PP_LOCAL_PROFANITY_SUBJECT_3 Subject =~ /\bWank(s|er|ing)?\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_3 Subject: W word
+score    PP_LOCAL_PROFANITY_SUBJECT_3 1
+
+header   PP_LOCAL_PROFANITY_SUBJECT_4 Subject =~ /\bClit\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_4 Subject: Cl word
+score    PP_LOCAL_PROFANITY_SUBJECT_4 1
+
+header   PP_LOCAL_PROFANITY_SUBJECT_5 Subject =~ /\bBastard\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_5 Subject: B word
+score    PP_LOCAL_PROFANITY_SUBJECT_5 1
+
+header   PP_LOCAL_PROFANITY_SUBJECT_6 Subject =~ /\bPenis\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_6 Subject: P word
+score    PP_LOCAL_PROFANITY_SUBJECT_6 1
+
+header   PP_LOCAL_PROFANITY_SUBJECT_7 Subject =~ /\bFelch\b/i
+describe PP_LOCAL_PROFANITY_SUBJECT_7 Subject: Fe word
+score    PP_LOCAL_PROFANITY_SUBJECT_7 1
+
+body     PP_LOCAL_PROFANITY_BODY_1 /\bh0ney\b/i
+describe PP_LOCAL_PROFANITY_BODY_1 Body: h0ney
+score    PP_LOCAL_PROFANITY_BODY_1 1
+
+body     PP_LOCAL_PROFANITY_BODY_2 /\t\*ts\b/i
+describe PP_LOCAL_PROFANITY_BODY_2 Body: t_ts
+score    PP_LOCAL_PROFANITY_BODY_2 1
+
+body     PP_LOCAL_PROFANITY_BODY_3 /\bF(\#|\*|u)ck(s|er|ed|ing|buddy|buddies)?\b/i
+describe PP_LOCAL_PROFANITY_BODY_3 Body: obfuscated f*ck
+score    PP_LOCAL_PROFANITY_BODY_3 2
+
+
+
+
+###
+##    ____          _ Apache SpamAssassin____        _
+##   / ___|   _ ___| |_ ___  _ __ ___   |  _ \ _   _| | ___  ___
+##  | |  | | | / __| __/ _ \| '_ ` _ \  | |_) | | | | |/ _ \/ __|
+##  | |__| |_| \__ \ || (_) | | | | | | |  _ <| |_| | |  __/\__ \
+##   \____\__,_|___/\__\___/|_| |_| |_| |_| \_\\__,_|_|\___||___/
+##             https://github.com/kawaiipantsu/spamassassin-rules
+##
+## Custom rule description:
+##
+## Trying to catch PayPal scam mails
+##
+#########################################################################
+
+body   __PP_LOCAL_PAYPAL_01 /\bpaypal\b/i
+header __PP_LOCAL_PAYPAL_02 From =~ /paypal/i
+header __PP_LOCAL_PAYPAL_03 From !~ /@.*paypal\..*/i
+header __PP_LOCAL_PAYPAL_04 X-Mailer =~ /(outlook|express)/i
+header __PP_LOCAL_PAYPAL_05 Subject =~ /\b(paypal)\b/i
+body   __PP_LOCAL_PAYPAL_06 /(security|normal account activities|unusual|knowledge)/i
+body   __PP_LOCAL_PAYPAL_07 /Click here/i
+rawbody __PP_LOCAL_PAYPAL_08 /PP\-Correlation\-Id\:/
+
+meta MALICIOUS_PP_LOCAL_PAYPAL __PP_LOCAL_PAYPAL_02 && __PP_LOCAL_PAYPAL_03 && (( __PP_LOCAL_PAYPAL_01 + __PP_LOCAL_PAYPAL_04 + __PP_LOCAL_PAYPAL_05 + __PP_LOCAL_PAYPAL_06 + __PP_LOCAL_PAYPAL_07 + ! __PP_LOCAL_PAYPAL_08 )) > 3
+describe MALICIOUS_PP_LOCAL_PAYPAL Looks like a PayPal phishing (1)
+score MALICIOUS_PP_LOCAL_PAYPAL 8
+
+header __PP_LOCAL_PAYPAL2_01 From =~ /PayPal/i
+header __PP_LOCAL_PAYPAL2_02 From !~ /@.*paypal\..*/i
+
+describe MALICIOUS_PP_LOCAL_PAYPAL2 Looks like PayPal phishing (2)
+meta MALICIOUS_PP_LOCAL_PAYPAL2 (( __PP_LOCAL_PAYPAL2_01 + __PP_LOCAL_PAYPAL2_02 )) > 1
+score MALICIOUS_PP_LOCAL_PAYPAL2 6
+
+
+
+## Custom rule description:
+##
+## X-PHP-Originating-Script: 10000:sendme.php(3) : eval()'d code
+##
+#########################################################################
+ 
+
+header MALICIOUS_PP_LOCAL_PHP_EVAL X-PHP-Originating-Script =~ /eval\(\)\'d code/i
+
+
+
+
+##
+## Custom rule description:
+##
+## Hacked server with compromised script containing spam code
+##
+#########################################################################
+
+#uri      MALICIOUS_DN_PHP_HACKURL1 /\.php\?utm_source=[a-z0-9]+&utm_medium=[a-z0-9]+&utm_campaign=[a-z0-9]+&utm_term=[a-z0-9]+&utm_content=[a-z0-9]+/
+uri      MALICIOUS_DN_PHP_HACKURL1 /\/[a-z]+\.php\?utm_source=[a-zA-Z0-9]{10}&utm_medium=[a-zA-Z0-9]{10}&utm_campaign=[a-zA-Z0-9]{10}&utm_term=[a-zA-Z0-9]{10}&utm_content=[a-zA-Z0-9]{10}/i
+score    MALICIOUS_DN_PHP_HACKURL1 20
+describe MALICIOUS_DN_PHP_HACKURL1 Hacked PHP script spam link
+
+uri      MALICIOUS_DN_PHP_HACKURL2 /\/[a-z]+\.php\?\w=[a-zA-Z0-9]+(&[\w\d]+=[a-zA-Z0-9]+){2,}/i
+score    MALICIOUS_DN_PHP_HACKURL2 20
+describe MALICIOUS_DN_PHP_HACKURL2 Hacked PHP script spam link
+
+header MALICIOUS_VULN_PHPMAILER X-Mailer =~ /PHPMailer 5\.2\.[0-9] /i
+score MALICIOUS_VULN_PHPMAILER 2.75
+describe MALICIOUS_VULN_PHPMAILER Mail was sent from a vulnerable version of PHPMailer
+
+
+
+##
+## Custom rule description:
+##
+## More innocent servers hit by hackers using cli php to spam 
+## via Wordpress plugin
+##
+#########################################################################
+
+header   __DN_PHPSRC    X-Source =~ /\/usr\/bin\/php/
+header   __DN_PHPSRCARG1 X-Source-Args =~ /\/usr\/bin\/php/
+header   __DN_PHPSRCARG2 X-Source-Args =~ /\/usr\/sbin\/proxyexec/
+header   __DN_PHPSRCARG3 X-Source-Args =~ /\/usr\/sbin\//
+header   __DN_PHPSRCARG4 X-Source-Args =~ /\/usr\/bin\//
+header   __DN_PHPSRCDIR1 X-Source-Dir =~ /wp-content/i
+header   __DN_PHPSRCDIR2 X-Source-Dir =~ /public_html/i
+
+meta     MALICIOUS_DN_PHPSOURCE1   (__DN_PHPSRC && __DN_PHPSRCARG1 && __DN_PHPSRCDIR1)
+score    MALICIOUS_DN_PHPSOURCE1   50
+describe MALICIOUS_DN_PHPSOURCE1   Hacked WordPress sites used to spam
+
+meta     MALICIOUS_DN_PHPSOURCE2   (__DN_PHPSRCARG2 && __DN_PHPSRCDIR2)
+score    MALICIOUS_DN_PHPSOURCE2   50
+describe MALICIOUS_DN_PHPSOURCE2   Hacked VPS CageFS
+
+##
+## Custom rule description:
+##
+## PostDanmark, they got marked as spam. Lets give them a lower score.
+## We can match on the SPF header as it's correct and shows their server.
+## Received-SPF: None (mailfrom) identity=mailfrom; client-ip=193.3.69.7; helo=ecmail2.post.dk; envelope-from=sbe@ecmail.post.dk; receiver=<UNKNOWN> 
+## Let's match on helo=*.post\.dk;
+## AND
+## Let's match for a actual tracking link
+## https://tracking.postnord.com/dk/?id=781c167f:0025:75a4:7059:e891:13dbab581961597b:832168954994
+##
+#########################################################################
+
+header   __DN_POSTDK_01 Received-SPF =~ /helo=.*\.post\.dk/i
+uri      __DN_POSTDK_02 /tracking\.postnord\.com\/dk\//
+
+meta     DN_POSTDK_1      (__DN_POSTDK_01)
+score    DN_POSTDK_1      -5
+describe DN_POSTDK_1      Allow Post Nord emails
+
+meta     DN_POSTDK_2      (__DN_POSTDK_01 && __DN_POSTDK_02)
+score    DN_POSTDK_2      -10
+describe DN_POSTDK_2      Allow Post Nord tracking emails
+
+
+
+describe MALICIOUS_PP_LOCAL_PHP_EVAL Eval()'ed PHP code as source
+score MALICIOUS_PP_LOCAL_PHP_EVAL 100
+
+
+##
+## Custom rule description:
+##
+## Match Saxo Bank emails and let them get a lower score!
+## We can match on the SPF header as it's correct and shows their server.
+## Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=185.16.141.244; helo=mx2.saxobank.com; envelope-from=prvs=592d974e2=saxobanknotification@saxobank.com; receiver=<UNKNOWN> 
+## Let's match on helo=*.saxobank\.com;
+##
+#########################################################################
+
+header   __DN_SAXOBANK_01 Received-SPF =~ /helo=.*\.post\.dk/i
+uri      __DN_SAXOBANK_02 /www\.onlinewebconnect\.com\/WebConnect\//
+
+meta     DN_SAXOBANK_1      (__DN_SAXOBANK_01)
+score    DN_SAXOBANK_1      -10
+describe DN_SAXOBANK_1      Allow SaxoBank emails
+
+meta     DN_SAXOBANK_2      (__DN_SAXOBANK_01 && __DN_SAXOBANK_02)
+score    DN_SAXOBANK_2      -20
+describe DN_SAXOBANK_2      Allow SaxoBank Margin call emails
+
+
+
+##
+## Custom rule description:
+##
+## Basic SEO rules ...
+##
+#########################################################################
+
+header PP_LOCAL_SEO_1 Subject =~ /\srankings?/i
+describe PP_LOCAL_SEO_1 google seo ranking spam
+score PP_LOCAL_SEO_1 2
+
+header PP_LOCAL_SEO_2 Message-ID =~ /servicehubmail\.com/
+describe PP_LOCAL_SEO_2 spammy headers (servicehubmail)
+score PP_LOCAL_SEO_2 2
+
+
+body   PP_LOCAL_SEO_3 /(Business Owner,|Hello Team)/i
+describe PP_LOCAL_SEO_3 Generic greeting
+score PP_LOCAL_SEO_3 2
+
+body   __PP_LOCAL_SEO_01 /\s(SEO|Search Engine Optimization)/i
+body   __PP_LOCAL_SEO_02 /\s(1st page of|page one of|first page of|top of|front page of) google/i
+body   __PP_LOCAL_SEO_03 /\s(analysis|analyze)\W/i
+body   __PP_LOCAL_SEO_04 /\s(optimize|optimizing|optimization|visibility)\W/i
+body   __PP_LOCAL_SEO_05 /\s(Ethical|Organic)\W/i
+body   __PP_LOCAL_SEO_06 /\s(ROI|sales|proposal|strategy)/i
+body   __PP_LOCAL_SEO_07 /\s(website|keywords?|ranking)/i
+body   __PP_LOCAL_SEO_08 /\s(higher|more|better) traffic/i
+body   __PP_LOCAL_SEO_09 /\s(google|bing|yahoo)/i
+
+meta PP_LOCAL_SEO_4 (( __PP_LOCAL_SEO_01 + __PP_LOCAL_SEO_02 + __PP_LOCAL_SEO_03 + __PP_LOCAL_SEO_04 + __PP_LOCAL_SEO_05 + __PP_LOCAL_SEO_06 + __PP_LOCAL_SEO_07 + __PP_LOCAL_SEO_08 + __PP_LOCAL_SEO_09 )) > 5
+
+describe PP_LOCAL_SEO_4 Body contains too many SEO optimisation words
+score    PP_LOCAL_SEO_4 2
+
+rawbody __PP_LOCAL_TOO_MUCH_SEO /\b(SEO)\b/i
+meta PP_LOCAL_TOO_MUCH_SEO __PP_LOCAL_TOO_MUCH_SEO > 3
+describe PP_LOCAL_TOO_MUCH_SEO Too many uses of SEO (>3)
+score PP_LOCAL_TOO_MUCH_SEO 5
+tflags __PP_LOCAL_TOO_MUCH_SEO multiple maxhits=5
+
+meta PP_LOCAL_SEO_SUSPICIOUS (( __PP_LOCAL_SEO_01 + __PP_LOCAL_SEO_02 + __PP_LOCAL_SEO_07 + __PP_LOCAL_SEO_09 )) > 2
+describe PP_LOCAL_SEO_SUSPICIOUS Probably SEO spam
+score PP_LOCAL_SEO_SUSPICIOUS 3
+
+
+
+##
+## Custom rule description:
+##
+## A bit to much sex talk :)
+## Let's look for 4 or more occurances of sexual content...
+##
+#########################################################################
+
+body __PP_LOCAL_TOO_MUCH_SEX /\b(fuck|ass|a\$\$|f\@ck|sex|cocky|cock|c0ck|b\@anged|b\@ng|sexy|sexual|boobies|boobs|bl0w|b10w|b00bs|s3x|\$ex|pu\$\$y)\b/i
+meta PP_LOCAL_TOO_MUCH_SEX __PP_LOCAL_TOO_MUCH_SEX >= 4
+describe PP_LOCAL_TOO_MUCH_SEX Too many uses of sex/sexy/sexual/boobies etc (>4)
+score PP_LOCAL_TOO_MUCH_SEX 10
+tflags __PP_LOCAL_TOO_MUCH_SEX multiple maxhits=5
+
+
+meta PP_LOCAL_DODGY_WORDS (( __PP_LOCAL_TOO_MUCH_SEX > 0 ))
+describe PP_LOCAL_DODGY_WORDS Obfuscated words, probably sexual
+score PP_LOCAL_DODGY_WORDS 4
+
+
+body __PP_LOCAL_UNWANTED_WORDS /\b(Testosterona|metadrol|viagra|cialis|Tadalafil|sildenafil)\b/i
+meta PP_LOCAL_UNWANTED_WORDS __PP_LOCAL_UNWANTED_WORDS >= 2
+describe PP_LOCAL_UNWANTED_WORDS Unwanted words (metadrol, viagra ....)
+score PP_LOCAL_UNWANTED_WORDS 5
+tflags __PP_LOCAL_UNWANTED_WORDS multiple maxhits=3
+
+body __PP_LOCAL_SUSPECT_WORDS /\b(rock hard|erection)\b/i
+meta PP_LOCAL_SUSPECT_WORDS __PP_LOCAL_SUSPECT_WORDS >= 1
+describe PP_LOCAL_SUSPECT_WORDS suspect words (erection etc....)
+score PP_LOCAL_SUSPECT_WORDS 2
+tflags __PP_LOCAL_SUSPECT_WORDS multiple maxhits=3
+

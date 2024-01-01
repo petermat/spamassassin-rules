@@ -1,0 +1,5 @@
+# SpamAssassin rule for INTERNAL o365 emails
+
+header          INTERNAL_ESETNL1       X-MS-Exchange-Organization-AuthAs =~ /Internal$/i
+score           INTERNAL_ESETNL1      -4.0
+describe        INTERNAL_ESETNL1       Internal: Office365 Internal Email

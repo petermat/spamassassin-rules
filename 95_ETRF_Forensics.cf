@@ -1,0 +1,50 @@
+# Backlog from forensics
+
+# SpamAssassin rule for INTERNAL
+
+#
+header          NOSPAM_SPF_PASS  Received=~ /this is not supposed to trigger/
+score           NOSPAM_SPF_PASS  0
+describe        NOSPAM_SPF_PASS  NOSPAM_SPF_PASS sender SPF authorized
+
+#
+header          NOSPAM_SPF_SOFTFAIL  Received=~ /this is not supposed to trigger/
+score           NOSPAM_SPF_SOFTFAIL  0
+describe        NOSPAM_SPF_SOFTFAIL  NOSPAM_SPF_SOFTFAIL
+
+
+#
+header          MALICIOUS_SPF_FAIL  Received=~ /this is not supposed to trigger/
+score           MALICIOUS_SPF_FAIL  0
+describe        MALICIOUS_SPF_FAIL  "MALICIOUS_SPF_FAIL
+
+
+#
+header          MALICIOUS_SPF_ERROR  Received=~ /this is not supposed to trigger/
+score           MALICIOUS_SPF_ERROR  0
+describe        MALICIOUS_SPF_ERROR  MALICIOUS_SPF_ERROR 
+
+#
+header          NOSPAM_SPF_DEBUG  Received=~ /this is not supposed to trigger/
+score           NOSPAM_SPF_DEBUG  0
+describe        NOSPAM_SPF_DEBUG  NOSPAM_SPF_DEBUG Output from SPF not recognized
+
+#
+header          MALICIOUS_HA_VERDICT  Received=~ /this is not supposed to trigger/
+score           MALICIOUS_HA_VERDICT  0
+describe        MALICIOUS_HA_VERDICT  MALICIOUS_HA_VERDICT Hybrid-Analysis recognize file {} as suspicious
+
+#
+header          MALICIOUS_HA_AV_HIT  Received=~ /this is not supposed to trigger/
+score           MALICIOUS_HA_AV_HIT  0
+describe        MALICIOUS_HA_AV_HIT  MALICIOUS_HA_AV_HIT Some Antivirus engine recognize file {} as a threat
+
+#
+header          NOSPAM_HYBRIDANALYSIS_ALL_GOOD  Received=~ /this is not supposed to trigger/
+score           NOSPAM_HYBRIDANALYSIS_ALL_GOOD  0
+describe        NOSPAM_HYBRIDANALYSIS_ALL_GOOD  NOSPAM_HYBRIDANALYSIS_ALL_GOOD All attachements are known and clear in HA
+
+#
+header          MALICIOUS_PDF_RESULTS  Received=~ /this is not supposed to trigger/
+score           MALICIOUS_PDF_RESULTS  0
+describe        MALICIOUS_PDF_RESULTS  MALICIOUS_PDF_RESULTS for file

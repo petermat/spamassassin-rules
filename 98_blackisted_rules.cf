@@ -1,0 +1,11 @@
+# SpamAssassin rules file: Blacklist of invalid rules
+#
+# Add ad least 'body /(?!x)x/i'
+#
+##########################################################################
+
+
+
+# disabled because ... from file ...
+body        TEST1   /(?!x)x/i
+describe    TEST1   Blacklisted rule TEST1
