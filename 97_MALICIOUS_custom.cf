@@ -72,8 +72,13 @@ score          MALICIOUS_GENERIC_REDIR          2
 header 		__KAM_SOMETLD_ARE_BAD_TLD_FROM          From:addr =~ /\.(pw|stream|trade|bid|press|top|date)$/i
 uri		__KAM_SOMETLD_ARE_BAD_TLD_URI		/\.(pw|stream|trade|bid|press|top|date)($|\/)/i
 
+
 meta		MALICIOUS_SOMETLD_ARE_BAD_TLD		(__KAM_SOMETLD_ARE_BAD_TLD_FROM + __KAM_SOMETLD_ARE_BAD_TLD_URI) >= 1
 describe 	MALICIOUS_SOMETLD_ARE_BAD_TLD         .stream, .trade, .pw, .top, .press, .bid & .date TLD Domain Abuse
 score 		MALICIOUS_SOMETLD_ARE_BAD_TLD         2.0
 
 
+#EMAIL PHISH common
+rawbody		REVIEW_PHISHING1	/Review These Messages/i
+score		REVIEW_PHISHING1	3.0
+describe	REVIEW_PHISHING1	A common phishing string in email body: Review These Messages
